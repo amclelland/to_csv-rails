@@ -10,7 +10,7 @@ class Array
     if options[:only]
       columns = Array(options[:only]).map(&:to_sym)
     else
-      columns = self.first.class.column_names.map(&:to_sym) - Array(options[:except]).map(&:to_sym)
+      columns = self.first.attributes.keys.map(&:to_sym) - Array(options[:except]).map(&:to_sym)
     end
 
     return '' if columns.empty?
@@ -25,7 +25,7 @@ class Array
     self.each do |obj|
       data << columns.map do |column|
         begin
-          column_value = obj.send(column).to_s
+          column_value = obj.attributes.symbolize_keys[column].to_s
           needs_quotes = (column_value.include?(",") || column_value.include?("\n"))
           needs_quotes ? "\"#{column_value}\"" : column_value
         rescue
